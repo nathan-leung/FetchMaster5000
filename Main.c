@@ -30,7 +30,7 @@ void displayFace()
 void displayFaceSleep()
 {
 	eraseDisplay();
-	nxtDisplayString (1,"  /\       /\  ");
+	nxtDisplayString (1,"  /\        /\  ");
 	nxtDisplayString (2," |  |      |  | ");
 	nxtDisplayString (3," |  |      |  | ");
 
