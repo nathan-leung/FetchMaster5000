@@ -1,20 +1,17 @@
 //FETCHMASTER5000
-// Nathan Leung, Benjamin Lo, Rares Gosman, Yifan Wu
+//Nathan Leung, Benjamin Lo, Rares Gosman, Yifan Wu
 
 
-//Drink Data
+//DRINK DATA
 //Coke: Colour = Blue, number = 0
 //Sprite: Colour = green, number = 1
 //Fanta: Colour = yellow, number = 2
 //Canada Dry = red, number = 3
 
-
-//Two motors are used with bluetooth phone app on a car built out of Lego
-
+//Two motors are used on a Lego car controlled by Bluetooth through a phone app
 
 
-//Function
-//The following 4 function are only for ways of displaying a face onscreen
+//FUNCTIONS FOR DISPLAYING A FACE ONSCREEN
 
 void displayFace()
 {
@@ -37,7 +34,6 @@ void displayFaceSleep()
 	nxtDisplayString (6,"     \____/    ");
 }
 
-
 void startup()
 {
 	displayFaceSleep();
@@ -45,7 +41,7 @@ void startup()
 	while(nNxtButtonPressed == -1);
 	while(nNxtButtonPressed != -1);
 
-	for (int i =0; i <3; i++)//blinking awake
+	for (int i =0; i <3; i++) //blinking awake
 	{
 		displayFaceSleep();
 		wait1Msec(250);
@@ -65,7 +61,7 @@ void end()
 {
 	displayFace();
 
-	for (int i =0; i <3; i++)//blinking asleep
+	for (int i =0; i <3; i++) //blinking asleep
 	{
 		displayFace();
 		wait1Msec(250);
@@ -76,16 +72,16 @@ void end()
 }
 
 
-//actual useful functions
+//FUNCTIONS FOR MENU OPERATION
 
-int choice(int choiceIndicator, int lineStart)//general selection menu
+int choice(int choiceIndicator, int lineStart) //general selection menu
 {
-	string arrow[4] = {">"," "," "," "}, choices[4];//4 is max possible number of choices in this program
+	string arrow[4] = {">"," "," "," "}, choices[4]; //4 is max possible number of choices in this program
 	int currentChoice = 0, numChoices;
 
 	time10[T1] = 0;
 
-	if(choiceIndicator == 1) //The following if statements are coded since arrays cannot be passed into functions in Robot C
+	if(choiceIndicator == 1) //The following if statements are coded since arrays cannot be passed into functions in Robot C.
 	{
 		choices[0] = "Coke";
 		choices[1] = "Sprite";
@@ -107,9 +103,8 @@ int choice(int choiceIndicator, int lineStart)//general selection menu
 		numChoices = 3;
 	}
 
-	while(nNxtButtonPressed !=3)
+	while(nNxtButtonPressed !=3) //displays all drink choices
 	{
-		//Displays all choices:
 		if (time10[T1]%100 < 50) //arrow blinks on
 			for (int i=0; i < numChoices; i++)
 				nxtDisplayString(lineStart+i, "%s%s", arrow[i], choices[i]);
@@ -117,16 +112,14 @@ int choice(int choiceIndicator, int lineStart)//general selection menu
 			for (int i=0; i < numChoices; i++)
 				nxtDisplayString(lineStart+i, " %s", choices[i]);
 
-		if (nNxtButtonPressed == 1 && currentChoice+1 < numChoices)//move arrow down onscreen
-																															//if arrow is on last choice, do nothing
+		if (nNxtButtonPressed == 1 && currentChoice+1 < numChoices) //moves arrow down onscreen; if arrow is on last choice, do nothing
 		{
 			while (nNxtButtonPressed == 1);
 			arrow[currentChoice] = " ";
 			currentChoice += 1;
 			arrow[currentChoice] = ">";
 		}
-		else if (nNxtButtonPressed == 2 && currentChoice-1 >= 0)//move arrow up
-																														//if arrow is on first choice, do nothing
+		else if (nNxtButtonPressed == 2 && currentChoice-1 >= 0) //moves arrow up; if arrow is on first choice, do nothing
 		{
 			while (nNxtButtonPressed == 2);
 			arrow[currentChoice] = " ";
@@ -139,10 +132,17 @@ int choice(int choiceIndicator, int lineStart)//general selection menu
 	return currentChoice;
 }
 
+bool completelyEmpty(int cansLeft1, int cansLeft2, int cansLeft3, int cansLeft4)
+{
+	if (cansLeft1+cansLeft2+cansLeft3+cansLeft4 > 0) //checks if machine is completely empty
+		return false;
+	return true;
+}
 
-//the following two functions use function overloading
 
-int order()//simple order
+//FUNCTIONS WITH OVERLOADING
+
+int order() //simple order
 {
 	bool notCorrect;
 	int drink;
@@ -152,34 +152,28 @@ int order()//simple order
 	{
 		eraseDisplay();
 		nxtDisplayString(2,"Choose a drink:");
-		drink = choice(1,3); //selection menu: displays all drinks: return to drink menu
+		drink = choice(1,3); //selection menu: displays all drinks; return to drink menu
 
 		nxtDisplayString(2, "You chose:");
 		nxtDisplayString(3, "%s", soda[drink]);
 		nxtDisplayString(4, "Is this correct?");
-		notCorrect = choice(2,5); //selection menu: yes or no: return to drink menu
+		notCorrect = choice(2,5); //selection menu: yes or no; return to drink menu
 	} while(notCorrect);
 	return drink;
 }
 
-int order(int & numOfCans)//complex order
+int order(int & numOfCans) //complex order
 {
 	int drinkType = order();
 	nxtDisplayString(2, "How many cans?");
-	numOfCans = choice(3,3)+1;//selection menu: 1,2, or 3 return 0, 1 , 2
-														//user chooses how many cans of a certain type that they want
+	numOfCans = choice(3,3)+1;//selection menu: 1,2, or 3 return 0, 1, 2; user chooses desired number of cans of a certain type
 	return drinkType;
 }
 
-bool completelyEmpty(int cansLeft1, int cansLeft2, int cansLeft3, int cansLeft4)
-{
-	if (cansLeft1+cansLeft2+cansLeft3+cansLeft4 > 0)//checks if machine is completely empty
-		return false;
-	return true;
-}
 
+//FUNCTIONS FOR DISPENSING DRINKS
 
-void rotate(int choice)//rotate until you see a certain colour which corresponds to a drink
+void rotate(int choice) //rotate until the certain colour which corresponds to a drink is seen
 {
 	while(choice != SensorValue[S3]-2)
 	{
@@ -194,23 +188,22 @@ void armMovement()
 	motor[motorC] = -100;
 	while (nMotorEncoder[motorC] > -240); //arm movement
 	motor[motorC] = 100;
-	while (nMotorEncoder[motorC] <= -40);//encoder is not completely accurate, should be 0 otherwise
+	while (nMotorEncoder[motorC] <= -40); //encoder is not completely accurate; should be 0 otherwise
 	motor[motorC] = 0;
 }
 
-
-bool dispense() // dispense a can
+bool dispense() //dispense a can
 {
 	armMovement();
 	time1[T1] = 0;
-	while (SensorValue[S2] == 0)//touch sensor detects can
+	while (SensorValue[S2] == 0) //touch sensor detects can
 	{
 		if (time1[T1] > 2000)
 		{
 			nxtDisplayString (0, "Dispensing Error!");
 			nxtDisplayString (1, "Retrying...");
 			wait1Msec(1000);
-			for(int i=0; i<3;i++)//try three times to redispense
+			for(int i=0; i<3;i++) //try three times to redispense
 			{
 				armMovement();
 				time1[T2] = 0;
@@ -227,7 +220,6 @@ bool dispense() // dispense a can
 
 //MAIN PROGRAM
 
-
 task main()
 {
 	SensorType[S3] = sensorCOLORFULL;
@@ -236,19 +228,19 @@ task main()
  	startup();
 	eraseDisplay();
 
-	int numLeft[4] = {3,3,3,3};	//Assume inital number of drinks of each type is 3
+	int numLeft[4] = {3,3,3,3};	//assume inital number of drinks of each type is 3
 	bool anotherOrder, working = true;
 
 	do
 	{
-		anotherOrder = false;//change placement? ////
-		int numOrders = 0, numCans[12] = {0,0,0,0,0,0,0,0,0,0,0,0}, drinkChoice[12] = {0,0,0,0,0,0,0,0,0,0,0,0}; //Assume max number of orders is 12
+		anotherOrder = false;
+		int numOrders = 0, numCans[12] = {0,0,0,0,0,0,0,0,0,0,0,0}, drinkChoice[12] = {0,0,0,0,0,0,0,0,0,0,0,0}; //assume max number of orders is 12
 
 		nxtDisplayString(2, "Order more than");
 		nxtDisplayString(3, "one can?");
 		int choiceType = choice(2,4); //more than 1 can? (0=yes, 1=no)
 
-		if (choiceType == 1) // only 1 can
+		if (choiceType == 1) //only 1 can
 		{
 			bool enoughCans;
 
@@ -271,7 +263,7 @@ task main()
 					numCans[0] = 1;
 				}
 
-			}while(!enoughCans);//repeat single-can order
+			}while(!enoughCans); //repeat single-can order
 		}
 
 		else
@@ -281,10 +273,9 @@ task main()
 			do {
 				anotherCan = false;
 
-				drinkChoice[numOrders] = order(numCans[numOrders]);//drinkChoice array gets the type
-																													//numCans array gets number ordered
+				drinkChoice[numOrders] = order(numCans[numOrders]); //drinkChoice array gets the type; numCans array gets number ordered
 
-				if (numLeft[drinkChoice[numOrders]] - numCans[numOrders] < 0)//Not enough cans?
+				if (numLeft[drinkChoice[numOrders]] - numCans[numOrders] < 0) //not enough cans?
 				{
 					anotherCan = true;
 					eraseDisplay();
@@ -295,26 +286,26 @@ task main()
 				}
 				else
 				{
-					numLeft[drinkChoice[numOrders]] -=numCans[numOrders];//decrease number of cans of that type
+					numLeft[drinkChoice[numOrders]] -=numCans[numOrders]; //decrease number of cans of that type
 					numOrders++;
 
-					if (!completelyEmpty(numLeft[0],numLeft[1],numLeft[2],numLeft[3]))/////
+					if (!completelyEmpty(numLeft[0],numLeft[1],numLeft[2],numLeft[3]))
 					{
 						nxtDisplayString(2, "Another drink?");
-						if(!choice(2,3))//selection menu: another can(yes=0,no=1)
+						if(!choice(2,3)) //selection menu: another can (yes=0, no=1)
 							anotherCan = true;
 					}
 				}
 
-			} while(anotherCan && numOrders <=12 ); // maximum 12 orders
+			} while(anotherCan && numOrders <=12 ); //maximum 12 orders
 		}
 		displayFace();
 
-		for(int i = 0; i<numOrders && working; i++)//increment through drinks
+		for(int i = 0; i<numOrders && working; i++) //increment through drinks
 		{
-			for(int n=0;n<numCans[i] && working;n++)//increment through number of cans for each drink
+			for(int n=0;n<numCans[i] && working;n++) //increment through number of cans for each drink
 			{
-				rotate(drinkChoice[i]);//move above to other for loop?
+				rotate(drinkChoice[i]);
 				displayFaceSleep();
 				wait1Msec(500);
 
@@ -325,10 +316,10 @@ task main()
 		}
 		eraseDisplay();
 
-		if (working && !completelyEmpty(numLeft[0],numLeft[1],numLeft[2],numLeft[3]))//array cannot be passed into function
+		if (working && !completelyEmpty(numLeft[0],numLeft[1],numLeft[2],numLeft[3])) //since array cannot be passed into function
 		{
 			nxtDisplayString(2, "Another Order?");
-			if(!choice(2,3))//selection menu: another can
+			if(!choice(2,3)) //selection menu: another can
 				anotherOrder = true;
 		}
 	}	while(anotherOrder && working);
